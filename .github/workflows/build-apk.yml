@@ -37,17 +37,22 @@ jobs:
           restore-keys: |
             buildozer-${{ runner.os }}-
 
-      - name: Pre-accept Android SDK licenses
+      - name: Discard incomplete Android SDK from cache
+        # A previous broken run cached an android-sdk folder without
+        # sdkmanager. If we leave it, buildozer skips the SDK download
+        # and fails with "sdkmanager ... does not exist".
         run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          printf '8933bad161af4178b1185d1a37fbf41ea5269c55\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n' > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          printf '84831b9409646a918e30573bab4c9c91346d8abd\n' > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-          echo "SDK licenses pre-accepted"
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+          if [ -d "$SDK" ] && [ ! -f "$SDK/tools/bin/sdkmanager" ] && [ ! -d "$SDK/cmdline-tools" ]; then
+            echo "Incomplete Android SDK found at $SDK - removing so buildozer reinstalls it"
+            rm -rf "$SDK"
+          fi
 
       - name: Build the debug APK
-        # `yes |` answers any remaining sdkmanager license prompt
-        # (GitHub runners have no interactive terminal).
-        run: yes | buildozer -v android debug
+        # SDK licenses are auto-accepted via android.accept_sdk_license
+        # in buildozer.spec (buildozer answers the y/N prompt itself,
+        # since GitHub runners have no interactive terminal).
+        run: buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
