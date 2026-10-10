@@ -1,0 +1,474 @@
+# Kharcha Track - user interface.
+# Colours: dark theme, cards on a near-black background.
+
+# ---------------------------------------------------------------- helpers --
+<FlatButton@Button>:
+    background_normal: ''
+    background_down: ''
+    background_color: 0.17, 0.18, 0.23, 1
+    color: 0.90, 0.92, 0.95, 1
+    font_size: '14sp'
+
+
+<FilterChip>:
+    size_hint: None, None
+    size: self.texture_size[0] + dp(28), dp(34)
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    color: root.cat_color if self.state == 'down' else [0.72, 0.76, 0.83, 1]
+    bold: True
+    font_size: '13sp'
+    canvas.before:
+        Color:
+            rgba: (root.cat_color[0], root.cat_color[1], root.cat_color[2], 0.22) if self.state == 'down' else rgba(0.15, 0.16, 0.21, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(17)]
+        Color:
+            rgba: root.cat_color if self.state == 'down' else (0, 0, 0, 0)
+        Line:
+            rounded_rectangle: (self.x + dp(1), self.y + dp(1), self.width - dp(2), self.height - dp(2), dp(16))
+            width: dp(1.3)
+
+
+<CatChip>:
+    size_hint_y: None
+    height: dp(42)
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    color: root.cat_color if self.state == 'down' else [0.75, 0.78, 0.85, 1]
+    bold: True
+    font_size: '13sp'
+    canvas.before:
+        Color:
+            rgba: (root.cat_color[0], root.cat_color[1], root.cat_color[2], 0.22) if self.state == 'down' else rgba(0.15, 0.16, 0.21, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10)]
+        Color:
+            rgba: root.cat_color if self.state == 'down' else (0, 0, 0, 0)
+        Line:
+            rounded_rectangle: (self.x + dp(1), self.y + dp(1), self.width - dp(2), self.height - dp(2), dp(9))
+            width: dp(1.3)
+
+
+<CategoryBar>:
+    size_hint_y: None
+    height: dp(16)
+    spacing: dp(8)
+    Label:
+        text: root.label_text
+        font_size: '12sp'
+        color: 0.62, 0.65, 0.72, 1
+        size_hint_x: 0.28
+        halign: 'left'
+        valign: 'middle'
+        text_size: self.size
+        shorten: True
+    BoxLayout:
+        size_hint_x: 0.46
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 0.07
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(8)]
+        Widget:
+            size_hint_x: max(root.fraction, 0.03)
+            canvas.before:
+                Color:
+                    rgba: root.cat_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(8)]
+        Widget:
+            size_hint_x: max(1.0 - root.fraction, 0.0)
+    Label:
+        text: root.amount_text
+        font_size: '12sp'
+        bold: True
+        color: 0.72, 0.75, 0.82, 1
+        size_hint_x: 0.26
+        halign: 'right'
+        valign: 'middle'
+        text_size: self.size
+        shorten: True
+
+
+# ----------------------------------------------------------------- a row ---
+<ExpenseRow>:
+    size_hint_y: None
+    height: dp(64)
+    padding: dp(6), dp(4), dp(8), dp(4)
+    spacing: dp(8)
+    canvas.before:
+        Color:
+            rgba: 0.13, 0.14, 0.18, 1
+        RoundedRectangle:
+            pos: self.x, self.y + dp(3)
+            size: self.width, self.height - dp(6)
+            radius: [dp(12)]
+    Widget:
+        size_hint_x: None
+        width: dp(5)
+        canvas:
+            Color:
+                rgba: root.cat_color
+            RoundedRectangle:
+                pos: self.x + dp(2), self.y + dp(6)
+                size: self.width - dp(4), self.height - dp(12)
+                radius: [dp(3)]
+    RowTapArea:
+        eid: root.eid
+        orientation: 'vertical'
+        padding: dp(2), 0, 0, 0
+        spacing: dp(2)
+        on_release: app.root.open_edit(root.eid)
+        Label:
+            text: root.note if root.note else root.category
+            font_size: '15sp'
+            bold: True
+            color: 0.93, 0.94, 0.96, 1
+            halign: 'left'
+            valign: 'bottom'
+            text_size: self.size
+            shorten: True
+            shorten_from: 'right'
+        Label:
+            text: root.category + '  ·  ' + root.day_text
+            font_size: '12sp'
+            color: 0.55, 0.58, 0.65, 1
+            halign: 'left'
+            valign: 'top'
+            text_size: self.size
+            shorten: True
+    Label:
+        text: root.amount_text
+        font_size: '15sp'
+        bold: True
+        color: root.cat_color
+        size_hint_x: None
+        width: dp(112)
+        halign: 'right'
+        valign: 'middle'
+        text_size: self.width, self.height
+        shorten: True
+    Button:
+        text: 'X'
+        font_size: '16sp'
+        bold: True
+        color: 0.55, 0.58, 0.65, 1
+        size_hint: None, None
+        size: dp(40), dp(40)
+        background_normal: ''
+        background_down: ''
+        background_color: 0, 0, 0, 0
+        on_release: app.root.ask_delete(root.eid)
+
+
+# ---------------------------------------------------------------- popups --
+<AddExpensePopup@Popup>:
+    title: app.root.popup_title
+    title_size: '17sp'
+    title_color: 0.95, 0.96, 0.98, 1
+    separator_height: 0
+    background: ''
+    background_color: 0.11, 0.12, 0.15, 1
+    auto_dismiss: False
+    size_hint: 0.94, None
+    height: box.height + dp(34)
+    on_dismiss: app.root.err_text = ''
+    BoxLayout:
+        id: box
+        orientation: 'vertical'
+        size_hint_y: None
+        height: self.minimum_height
+        padding: dp(14)
+        spacing: dp(10)
+        Label:
+            text: 'How much did you spend?'
+            font_size: '12sp'
+            color: 0.55, 0.58, 0.65, 1
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+            size_hint_y: None
+            height: dp(18)
+        TextInput:
+            id: amount_input
+            hint_text: 'Amount'
+            input_filter: 'float'
+            multiline: False
+            font_size: '20sp'
+            size_hint_y: None
+            height: dp(52)
+            padding: dp(14), (self.height - self.line_height) / 2
+            background_normal: ''
+            background_active: ''
+            background_color: 0.16, 0.17, 0.22, 1
+            foreground_color: 1, 1, 1, 1
+            cursor_color: 0.26, 0.65, 0.36, 1
+            hint_text_color: 0.5, 0.53, 0.6, 1
+        GridLayout:
+            id: cat_grid
+            cols: 4
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(8)
+        TextInput:
+            id: note_input
+            hint_text: 'Note (optional)'
+            multiline: False
+            font_size: '15sp'
+            size_hint_y: None
+            height: dp(48)
+            padding: dp(14), (self.height - self.line_height) / 2
+            background_normal: ''
+            background_active: ''
+            background_color: 0.16, 0.17, 0.22, 1
+            foreground_color: 1, 1, 1, 1
+            cursor_color: 0.26, 0.65, 0.36, 1
+            hint_text_color: 0.5, 0.53, 0.6, 1
+        BoxLayout:
+            size_hint_y: None
+            height: dp(44)
+            spacing: dp(8)
+            FlatButton:
+                text: '<'
+                size_hint_x: None
+                width: dp(46)
+                on_release: app.root.shift_popup_date(-1)
+            Label:
+                text: app.root.popup_date_text
+                font_size: '14sp'
+                color: 0.88, 0.9, 0.94, 1
+            FlatButton:
+                text: '>'
+                size_hint_x: None
+                width: dp(46)
+                on_release: app.root.shift_popup_date(1)
+            FlatButton:
+                text: 'Today'
+                size_hint_x: None
+                width: dp(72)
+                on_release: app.root.today_popup_date()
+        Label:
+            text: app.root.err_text
+            font_size: '13sp'
+            color: 1, 0.42, 0.42, 1
+            size_hint_y: None
+            height: dp(18) if self.text else 0
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+            FlatButton:
+                text: 'Cancel'
+                on_release: app.root.add_popup.dismiss()
+            FlatButton:
+                text: 'Save'
+                bold: True
+                background_color: 0.26, 0.65, 0.36, 1
+                on_release: app.root.save_from_popup()
+
+
+<ConfirmPopup@Popup>:
+    title: 'Delete this expense?'
+    title_size: '17sp'
+    title_color: 0.95, 0.96, 0.98, 1
+    separator_height: 0
+    background: ''
+    background_color: 0.11, 0.12, 0.15, 1
+    auto_dismiss: False
+    size_hint: 0.86, None
+    height: dp(170)
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(14)
+        spacing: dp(10)
+        Label:
+            text: 'This cannot be undone.'
+            font_size: '14sp'
+            color: 0.7, 0.72, 0.78, 1
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+            FlatButton:
+                text: 'Cancel'
+                on_release: app.root.confirm_popup.dismiss()
+            FlatButton:
+                text: 'Delete'
+                bold: True
+                background_color: 0.75, 0.24, 0.27, 1
+                on_release: app.root.confirm_delete()
+
+
+# ------------------------------------------------------------- main screen --
+<KharchaRoot>:
+    orientation: 'vertical'
+    padding: dp(12)
+    spacing: dp(10)
+
+    BoxLayout:
+        size_hint_y: None
+        height: dp(40)
+        Label:
+            text: 'Kharcha Track'
+            font_size: '24sp'
+            bold: True
+            color: 0.95, 0.96, 0.98, 1
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+        AnchorLayout:
+            size_hint_x: None
+            width: dp(84)
+            anchor_x: 'right'
+            anchor_y: 'center'
+            FlatButton:
+                text: 'Today'
+                size_hint: None, None
+                size: dp(76), dp(34)
+                font_size: '12sp'
+                on_release: root.go_to_today()
+
+    BoxLayout:
+        size_hint_y: None
+        height: dp(42)
+        spacing: dp(8)
+        FlatButton:
+            text: '<'
+            font_size: '18sp'
+            size_hint_x: None
+            width: dp(48)
+            on_release: root.shift_month_by(-1)
+        Label:
+            text: root.month_text
+            font_size: '16sp'
+            bold: True
+            color: 0.88, 0.9, 0.94, 1
+        FlatButton:
+            text: '>'
+            font_size: '18sp'
+            size_hint_x: None
+            width: dp(48)
+            on_release: root.shift_month_by(1)
+
+    BoxLayout:
+        id: summary
+        orientation: 'vertical'
+        size_hint_y: None
+        height: self.minimum_height
+        padding: dp(16)
+        spacing: dp(6)
+        canvas.before:
+            Color:
+                rgba: 0.13, 0.14, 0.18, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(18)]
+        Label:
+            text: 'Spent this month'
+            font_size: '12sp'
+            color: 0.55, 0.58, 0.66, 1
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+            size_hint_y: None
+            height: dp(18)
+        Label:
+            text: root.total_amount
+            font_size: '34sp'
+            bold: True
+            color: 1, 1, 1, 1
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+            size_hint_y: None
+            height: dp(46)
+        Label:
+            text: root.total_meta
+            font_size: '12sp'
+            color: 0.6, 0.63, 0.7, 1
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+            shorten: True
+            size_hint_y: None
+            height: dp(18)
+        BoxLayout:
+            id: breakdown
+            orientation: 'vertical'
+            spacing: dp(5)
+            size_hint_y: None
+            height: self.minimum_height
+
+    ScrollView:
+        size_hint_y: None
+        height: dp(42)
+        do_scroll_y: False
+        bar_width: dp(2)
+        BoxLayout:
+            id: chip_box
+            orientation: 'horizontal'
+            size_hint_x: None
+            size_hint_y: None
+            height: dp(38)
+            width: self.minimum_width
+            spacing: dp(7)
+            padding: 0, dp(2)
+
+    FloatLayout:
+        RecycleView:
+            id: rv
+            viewclass: 'ExpenseRow'
+            bar_width: dp(3)
+            scroll_type: ['bars', 'content']
+            RecycleBoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                default_size: None, dp(64)
+                default_size_hint: 1, None
+                spacing: dp(6)
+        Label:
+            text: root.empty_hint
+            font_size: '14sp'
+            color: 0.5, 0.53, 0.6, 1
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.size
+            opacity: 1 if root.empty_hint else 0
+        Button:
+            id: fab
+            text: '+'
+            font_size: '30sp'
+            bold: True
+            color: 1, 1, 1, 1
+            size_hint: None, None
+            size: dp(58), dp(58)
+            pos_hint: {'right': 0.98, 'y': 0.03}
+            background_normal: ''
+            background_down: ''
+            background_color: 0, 0, 0, 0
+            on_release: root.open_add()
+            canvas.before:
+                Color:
+                    rgba: 0.26, 0.65, 0.36, 1
+                Ellipse:
+                    pos: self.pos
+                    size: self.size

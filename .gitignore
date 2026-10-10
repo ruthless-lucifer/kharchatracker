@@ -1,0 +1,27 @@
+# Build output
+bin/
+build/
+*.apk
+*.aab
+buildozer.spec.local
+.buildozer/
+
+# Python
+__pycache__/
+*.pyc
+
+# Kivy dev artifacts
+.kivy/
+logs/
+
+# Local dev files
+screenshot*.png
+*.log
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/

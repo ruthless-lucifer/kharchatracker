@@ -1,0 +1,5 @@
+# Runtime dependency for the app (used by python-for-android on Android too).
+kivy==2.3.1
+
+# Only needed to regenerate the icons in tools/make_icons.py.
+# pillow
