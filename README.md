@@ -79,3 +79,4 @@ tools/make_icons.py  Regenerates the icon images (Pillow)
 - Charts per category (PieChart) - kivy-garden's graph.
 - Import/export CSV backup.
 - Reminder notification to log daily expenses (needs `plyer`)."# kharchatracker" 
+"# kharchatracker" 
