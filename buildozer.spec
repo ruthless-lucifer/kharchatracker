@@ -39,6 +39,11 @@ icon.icon = assets/icon.png
 # (str) Splash / loading screen image
 presplash.presplash = assets/presplash.png
 
+# (bool) Accept the Android SDK license automatically. Required on CI
+# servers (GitHub Actions) which have no interactive terminal to answer
+# sdkmanager's "Accept? (y/N)" prompt.
+android.accept_sdk_license = True
+
 # (list) Android architectures of the build. arm64-v8a covers essentially
 # every phone released in recent years and builds in about half the time.
 android.archs = arm64-v8a
