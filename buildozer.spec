@@ -39,9 +39,9 @@ icon.icon = assets/icon.png
 # (str) Splash / loading screen image
 presplash.presplash = assets/presplash.png
 
-# (list) Android architectures of the build. arm64-v8a covers almost all
-# modern phones; adding armeabi-v7a supports older 32-bit devices.
-android.archs = arm64-v8a, armeabi-v7a
+# (list) Android architectures of the build. arm64-v8a covers essentially
+# every phone released in recent years and builds in about half the time.
+android.archs = arm64-v8a
 
 # (int) Android API to use. Recent API gives a bigger app but better
 # platform support. Buildozer will download the SDK if needed.

@@ -29,8 +29,25 @@ jobs:
       - name: Install Buildozer
         run: pip install --user --upgrade buildozer
 
+      - name: Cache Buildozer (SDK + NDK)
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildozer
+          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-${{ runner.os }}-
+
+      - name: Pre-accept Android SDK licenses
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          printf '8933bad161af4178b1185d1a37fbf41ea5269c55\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n' > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          printf '84831b9409646a918e30573bab4c9c91346d8abd\n' > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          echo "SDK licenses pre-accepted"
+
       - name: Build the debug APK
-        run: buildozer -v android debug
+        # `yes |` answers any remaining sdkmanager license prompt
+        # (GitHub runners have no interactive terminal).
+        run: yes | buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
